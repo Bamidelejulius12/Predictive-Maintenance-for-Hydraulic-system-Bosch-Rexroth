@@ -8,7 +8,11 @@ from src.cloud.s3_storage import S3Storage
 from src.config.constant import BUCKET_NAME
 from src.pipeline.prediction import predict_rul
 from src.pipeline.training import TrainingPipeline
+from src.logger import configure_logger
+from src.exception import MyException
 
+
+logging = configure_logger()
 
 app = FastAPI(title="RUL Prediction API")
 
@@ -21,17 +25,21 @@ s3 = S3Storage(BUCKET_NAME)
 
 
 def load_artifacts():
-    """Load model, dataset, and feature columns"""
-    model = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}/{MODEL_STAGE}")
+    try: 
+        """Load model, dataset, and feature columns"""
+        model = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}/{MODEL_STAGE}")
 
-    json_key = s3.get_latest_file(prefix="features/", keyword="features_metadata")
-    feature_cols = s3.load_json(json_key)["FINAL_FEATURES_RUL"]
+        json_key = s3.get_latest_file(prefix="features/", keyword="features_metadata")
+        feature_cols = s3.load_json(json_key)["FINAL_FEATURES_RUL"]
 
-    csv_key = s3.get_latest_file(prefix="features/", keyword="rul_dataset")
-    dataset = s3.load_csv(csv_key)
-    dataset["timestamp"] = pd.to_datetime(dataset["timestamp"])
+        csv_key = s3.get_latest_file(prefix="features/", keyword="rul_dataset")
+        dataset = s3.load_csv(csv_key)
+        dataset["timestamp"] = pd.to_datetime(dataset["timestamp"])
+        logging.info(f"Artifacts loaded: model '{MODEL_NAME}' and dataset with {len(dataset):,} rows")
 
-    return model, dataset, feature_cols
+        return model, dataset, feature_cols
+    except Exception as e:
+        logging.error(f"Error occurred while loading artifacts: {e}")
 
 
 # Load at startup
@@ -64,7 +72,7 @@ def train_model():
 
     try:
         pipeline = TrainingPipeline()
-        pipeline.run()
+        pipeline.train()
 
         # Reload updated artifacts
         model, dataset, feature_cols = load_artifacts()
@@ -74,7 +82,8 @@ def train_model():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.error(f"Error during training: {e}")
+        raise MyException(f"Training failed: {e}")
 
 
 # Prediction route
@@ -107,4 +116,4 @@ def predict(data: SensorInput):
 
     except Exception as e:
         # Unexpected errors
-        raise HTTPException(status_code=500, detail=str(e))
+        raise MyException(f"Prediction failed: {e}")
