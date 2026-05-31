@@ -1,0 +1,16 @@
+from src.models.modelling import ModelingPipeline
+from src.logger import configure_logger
+
+logging = configure_logger()
+
+
+class TrainingPipeline:
+    def __init__(self):
+        self.modeling_pipeline = ModelingPipeline()
+
+    def train(self):
+        logging.info("Starting training pipeline...")
+        
+        self.modeling_pipeline.run()
+        
+        logging.info("Training pipeline completed successfully.")
