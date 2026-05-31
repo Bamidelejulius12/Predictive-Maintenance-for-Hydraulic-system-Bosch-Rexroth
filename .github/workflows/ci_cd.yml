@@ -79,8 +79,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        
-        envs: ECR_REGISTRY,ECR_REPOSITORY
+        envs: ECR_REGISTRY,ECR_REPOSITORY,HYDRAULIC_DAGSHUB_TOKEN,MLFLOW_TRACKING_USERNAME,MLFLOW_TRACKING_PASSWORD
         script: |
             # Stop old container
             docker stop fastapi-app || true
@@ -97,4 +96,7 @@ jobs:
             docker run -d \
                 -p 8000:8000 \
                 --name fastapi-app \
+                -e HYDRAULIC_DAGSHUB_TOKEN=$HYDRAULIC_DAGSHUB_TOKEN \
+                -e MLFLOW_TRACKING_USERNAME=$MLFLOW_TRACKING_USERNAME \
+                -e MLFLOW_TRACKING_PASSWORD=$MLFLOW_TRACKING_PASSWORD \
                 $ECR_REGISTRY/$ECR_REPOSITORY:latest
