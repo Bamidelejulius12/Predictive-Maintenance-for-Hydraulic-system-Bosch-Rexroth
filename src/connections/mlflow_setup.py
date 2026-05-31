@@ -5,6 +5,8 @@ import boto3
 import os
 import tempfile
 from src.config.constant import DAGSHUB_OWNER, DAGSHUB_REPO, EXPERIMENT
+from dotenv import load_dotenv
+load_dotenv(override=True)
 
 
 # def setup_mlflow():
