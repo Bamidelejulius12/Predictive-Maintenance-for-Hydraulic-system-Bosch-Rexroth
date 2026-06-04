@@ -17,3 +17,4 @@ S3_ARTIFACT_ROOT = f"s3://{BUCKET_NAME}/mlflow-artifacts"
 DAGSHUB_OWNER = "babatundejulius911"
 DAGSHUB_REPO  = "Predictive-Maintenance-for-Hydraulic-system-Bosch-Rexroth"
 EXPERIMENT = "hydraulic-rul-prediction"
+

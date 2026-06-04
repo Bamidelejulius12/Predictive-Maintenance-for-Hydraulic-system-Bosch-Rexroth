@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - FastAPI to EC2 via ECR
+name: CI/CD Pipeline for brosch-predictive-maintenance backend application
 
 on:
   push:
