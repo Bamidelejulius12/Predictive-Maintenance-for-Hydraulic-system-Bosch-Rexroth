@@ -9,7 +9,7 @@ from src.config.constant import featured_data_path, featured_data_json
 from src.cloud.s3_storage import S3Storage
 import io
 from datetime import datetime
-
+from src.config.constant import BUCKET_NAME
 logging = configure_logger()
 
 class FeatureEngineering:
@@ -102,11 +102,8 @@ class FeatureEngineering:
 
             rul_dataset = rul_data[FINAL_FEATURES_RUL + ['rul_hours', 'machine_id', 'timestamp']]
 
-
-
-
             # Storing of the featured dataset in aws s3
-            bucket_name = "hydraulic-press-bucket"
+            bucket_name = BUCKET_NAME
             s3 = S3Storage(bucket_name)
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

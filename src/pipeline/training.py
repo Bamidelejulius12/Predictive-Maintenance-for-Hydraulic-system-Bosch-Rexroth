@@ -14,3 +14,7 @@ class TrainingPipeline:
         self.modeling_pipeline.run()
         
         logging.info("Training pipeline completed successfully.")
+
+if __name__ == "__main__":
+    pipeline = TrainingPipeline()
+    pipeline.train()

@@ -53,6 +53,8 @@ class ModelingPipeline:
         self.rul_data = self.rul_data.sort_values("timestamp")
 
         split_time = self.rul_data["timestamp"].quantile(0.8)
+        # 01-01-2026 -> 31-10-2026 -train data
+        # 1-11-2026 -> 31-12-2026 - test data
 
         train = self.rul_data[self.rul_data["timestamp"] <= split_time]
         test = self.rul_data[self.rul_data["timestamp"] > split_time]
